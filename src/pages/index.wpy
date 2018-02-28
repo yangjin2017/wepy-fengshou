@@ -1,0 +1,299 @@
+<style lang="less">
+.bottom-view {
+  position: fixed;
+  width: 100%;
+  bottom: 40rpx;
+  padding: 0 24rpx;
+  box-sizing: border-box;
+  .btn {
+    width: 99%;
+    height: 88rpx;
+    font-size: 32rpx;
+    line-height: 88rpx;
+    margin-bottom: 5rpx;
+    text-align: center;
+    background-color: #00cc74;
+    color: #fff;
+    box-shadow: 5rpx 5rpx 10rpx #ccc;
+  }
+  .cancel {
+    background-color: #fff;
+    color: #999;
+  }
+}
+.pics-box {
+  box-sizing: border-box;
+  width: 99%;
+  padding-bottom: 40rpx;
+  background-color: #fff;
+  box-shadow: 5rpx 5rpx 10rpx #ccc;
+  .box {
+    position: relative;
+    float: left;
+    width: 33.3%;
+    margin-top: 40rpx;
+    .pic {width: 102rpx; height: 102rpx; margin: 0 auto 15rpx;}
+    .badge {position: absolute; top: 0; right: 30rpx; width: 42rpx; height: 42rpx;}
+    .text {font-size: 30rpx; text-align: center;}
+  }
+}
+.order {
+  display: flex;
+  font-size: 26rpx;
+  color: #8a8a8a;
+  padding: 24rpx 20rpx;
+  .order-left {
+    flex: 1;
+    .type-name {font-size: 32rpx; color: #333; margin-bottom: 60rpx;}
+    .address {line-height: 26rpx; margin-bottom: 12rpx;}
+  }
+  .order-right {
+    width: 220rpx;
+    text-align: right;
+    margin-left: 20rpx;
+    direction:rtl;
+    .type-icon {width: 120rpx; height: 120rpx; margin-bottom: 30rpx;}
+    .price {line-height: 26rpx;}
+  }
+}
+.notice {
+  display: flex;
+  align-items: center;
+  padding: 26rpx 30rpx;
+  margin-bottom: 14rpx;
+  .notice-icon {
+    width: 40rpx;
+    height: 40rpx;
+    margin-right: 24rpx;
+  }
+  .notice-text {font-size: 24rpx; color: #999; white-space: normal;}  
+}
+.shop {
+  margin-bottom: 5rpx;
+  padding-bottom: 0;
+  .flex-box {
+    display: flex;
+    padding: 26rpx 30rpx;
+    .icon {width: 100rpx; height: 100rpx; border-radius: 50%; margin-right: 24rpx;}
+    .seller-box {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding-right: 24rpx;
+      .seller {line-height: 32rpx; font-size: 32rpx; color: #333;}
+      .info {
+        display: flex;
+        align-items: center;
+        .star-icon {width: 36rpx; height: 36rpx; margin-right: 8rpx;}
+        .grade, .nums {font-size: 24rpx; color: #999;}
+        .nums {flex: 1; padding-left: 16rpx;}
+      }
+    }
+    .tel-btn {width: 76rpx; height: 76rpx; border-radius: 50%; border: 1rpx solid #ccc; box-shadow: 3rpx 3rpx 5rpx #ccc; margin-right: 5rpx;}
+  }
+  .time {
+    padding: 0 30rpx 16rpx;
+    font-size: 32rpx;
+    color: #333;
+    border-bottom: 1rpx solid #f2f2f2;
+  }
+  .btns {
+    display: flex;
+    .icon {width: 26rpx; height: 26rpx; margin-right: 10rpx;}
+    .cancel-btn, .share-btn {
+      display: flex;
+      flex: 1;
+      align-items: center;
+      justify-content: center;
+      height: 100rpx;
+      font-size: 28rpx;
+      color: #999;
+    }
+    .cancel-btn {border-right: 1rpx solid #f2f2f2;}
+  }
+}
+</style>
+<template>
+  <view class="container">
+    <!-- <map id="map" longitude="{{ longitude }}" latitude="{{ latitude }}" scale="14" controls="{{controls}}" bindcontroltap="controltap" markers="{{markers}}" bindmarkertap="markertap" polyline="{{polyline}}" bindregionchange="regionchange" show-location style="width: 100%; height: 100%;"></map>     -->
+
+    <cover-view class="bottom-view">
+      <cover-view class="pics-box" wx:if="{{step === 2}}">
+        <cover-view class="box" wx:for="{{ type }}" wx:key @tap="chooseType({{index}})">
+          <cover-image class="pic" src="../images/icons/{{item.pic}}.png"></cover-image>
+          <cover-image class="badge" src="../images/icons/right_fill.png" wx:if="{{chooseType[index]}}"></cover-image>
+          <cover-view class="text">{{item.text}}</cover-view>
+        </cover-view>
+      </cover-view>
+      <cover-view class="pics-box order" wx:if="{{step === 3}}">
+        <cover-view class="order-left" @tap="fnChooseAddress">
+          <cover-view class="type-name">家电</cover-view>
+          <cover-view class="address">{{address.address}}</cover-view>
+          <cover-view class="exact-address">{{exactAddress}}</cover-view>
+        </cover-view>
+        <cover-view class="order-right">
+          <cover-image class="type-icon" src="../images/icons/jiadian.png"></cover-image>
+          <cover-view class="price">价格：30~100/台</cover-view>
+        </cover-view>
+      </cover-view>
+      <cover-view class="pics-box notice" wx:if="{{step === 5}}">
+        <cover-image class="notice-icon" src="../images/icons/address.png"></cover-image>
+        <cover-view class="notice-text">收客正在努力赶来，请您耐心等待。若您另有安排，可在5分钟内无责取消</cover-view>
+      </cover-view>
+      <cover-view class="pics-box shop" wx:if="{{step === 5}}">
+        <cover-view class="flex-box">
+          <cover-image class="icon" src="../images/icons/jiadian.png"></cover-image>
+          <cover-view class="seller-box">
+            <cover-view class="seller">李师傅</cover-view>
+            <cover-view class="info">
+              <cover-image class="star-icon" src="../images/icons/address.png"></cover-image>
+              <cover-view class="grade">4.8</cover-view>
+              <cover-view class="nums">412单</cover-view>
+            </cover-view>
+          </cover-view>
+          <cover-image class="tel-btn" @tap="fnCall('10086')" src="../images/icons/address.png"></cover-image>
+        </cover-view>
+        <cover-view class="time">预计到达时间：15:30</cover-view>
+        <cover-view class="btns">
+          <cover-view class="cancel-btn">
+            <cover-image class="icon" src="../images/icons/address.png"></cover-image>
+            <cover-view>取消订单</cover-view>
+          </cover-view>
+          <cover-view class="share-btn">
+            <cover-image class="icon" src="../images/icons/address.png"></cover-image>
+            <cover-view>分享</cover-view>
+          </cover-view>
+        </cover-view>
+      </cover-view>
+      <cover-view wx:if="{{step === 1}}" class="btn" @tap="fnChoose">选择</cover-view>
+      <cover-view wx:if="{{step === 2 && isChooseType}}" class="btn" @tap="fnChooseAddress">下一步</cover-view>
+      <cover-view wx:if="{{step === 3}}" class="btn" @tap="fnSubmit">呼叫收客</cover-view>
+      <cover-view wx:if="{{step === 4}}" class="btn cancel" @tap="fnCancel">取消订单</cover-view>
+    </cover-view>
+    <toast />
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import Toast from 'wepy-com-toast'
+  import {GOODSTYPE, ADDRESS_LIST_UPDATE} from '../utils/Constants.js'
+  import Event from '../utils/Event.js'
+
+  export default class Index extends wepy.page {
+    components = {
+      toast: Toast
+    }
+
+    // mixins = [testMixin]
+
+    data = {
+      longitude: null,
+      latitude: null,
+      controls: [],
+      pics: [],
+      type: GOODSTYPE,
+      chooseType: [false, false, false, false, false, false, false, false, false],
+      step: 1,
+      userType: '',
+      address: {},
+      exactAddress: ''
+    }
+
+    computed = {
+      now () {
+        return +new Date()
+      },
+      isChooseType () {
+        let res = 0
+        this.chooseType.forEach(function(item) {
+          res += item
+        })
+        return Boolean(res)
+      }
+    }
+
+    methods = {
+      toast () {
+        let promise = this.$invoke('toast', 'show', {
+          title: '自定义标题',
+          img: 'https://raw.githubusercontent.com/kiinlam/wetoast/master/images/star.png'
+        })
+
+        promise.then((d) => {
+          console.log('toast done')
+        })
+      },
+      chooseType (index) {
+        this.chooseType[index] = !this.chooseType[index]
+        this.$apply()
+      },
+      fnChoose () {
+        this.step = 2
+        this.$apply()
+      },
+      fnChooseAddress () {
+        // wepy.chooseAddress({
+        //   success: res => {
+        //     console.log(res)
+        //   }
+        // })
+        wepy.navigateTo({url: './address'})
+        Event.listen(ADDRESS_LIST_UPDATE, params => {
+          this.userType = params.type
+          this.address = params.address
+          this.exactAddress = params.exactAddress
+          this.step = 3
+          this.$apply()
+          Event.remove(ADDRESS_LIST_UPDATE)
+        }, this)
+      },
+      fnSubmit () {
+        this.step = 4
+        this.$apply()
+      },
+      fnCancel () {
+        this.step = 5
+        this.$apply()
+      },
+      fnCall (tel) {
+        wepy.makePhoneCall({phoneNumber: tel})
+      }
+    }
+
+    events = {
+      'index-emit': (...args) => {
+        let $event = args[args.length - 1]
+        console.log(`${this.$name} receive ${$event.name} from ${$event.source.$name}`)
+      }
+    }
+
+    onLoad() {
+      let self = this
+      let getLocationSuc = {
+        success: res => {
+          self.latitude = res.latitude
+          self.longitude = res.longitude
+        }
+      }
+      let getSystemInfoSuc = {
+        success: res => {
+          const controls = [{
+            id: 1,
+            position: {
+              left: res.windowWidth - 40,
+              top: res.windowHeight - 100,
+              width: 30,
+              height: 30
+            },
+            iconPath: '/images/nav.png',
+            clickable: true
+          }]
+          self.controls = controls
+        }
+      }
+      Promise.all([wepy.getLocation(getLocationSuc), wepy.getSystemInfo(getSystemInfoSuc)]).then(() => self.$apply())
+    }
+  }
+</script>

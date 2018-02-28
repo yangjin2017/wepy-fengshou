@@ -1,0 +1,119 @@
+<style lang="less">
+  .bg {
+    height: 100%;
+  }
+  .panel {
+    position: absolute;
+    bottom: 40rpx;
+    left: 28rpx;
+    right: 28rpx;
+    .title {
+      display: flex;
+      justify-content: space-between;
+      padding: 30rpx 230rpx;
+      .nav {
+        display: block;
+        width: 100rpx;
+        height: 62rpx;
+        line-height: 62rpx;
+        text-align: center;
+        font-size: 28rpx;
+        border: 1rpx solid #fff;
+      }
+      .nav.active {
+        border-color: #ccc;
+        border-radius: 62rpx;
+      }
+    }
+    .row {
+      display: flex;
+      height: 90rpx;
+      line-height: 90rpx;
+      font-size: 28rpx;
+      .icon {
+        margin: 0 16rpx;
+      }
+      input {
+        height: 90rpx;
+        border-bottom: 1rpx solid #ccc;
+        flex: 1;
+      }
+    }
+    .row:last-of-type input {
+      border: none;
+    }
+    .btn {
+      width: 99%;
+      height: 88rpx;
+      font-size: 32rpx;
+      line-height: 88rpx;
+      margin-bottom: 5rpx;
+      text-align: center;
+      background-color: #00cc74;
+      color: #fff;
+      box-shadow: 5rpx 5rpx 10rpx #ccc;
+    }
+  }
+</style>
+
+<template>
+  <view class="container">
+    <image class="bg" src="../images/bg.png"></image>
+    <view class="panel">
+      <view class="title">
+        <text class="nav" :class="{'active': type=='1'}" @tap="chooseType('1')">居民</text>
+        <text class="nav" :class="{'active': type=='2'}" @tap="chooseType('2')">店铺</text>
+      </view>
+      <view class="row" @tap="chooseLocation">
+        <image class="icon" src="../images/icons/location.png"></image>
+        <input type="text" value="{{address.address}}" placeholder="请选择地址" disabled="true">
+      </view>
+      <view class="row">
+        <image class="icon" src="../images/icons/address.png"></image>
+        <input type="text" disabled="{{!address.address}}" bindinput="inputExactAddress" placeholder="您的具体位置或门牌号">
+      </view>
+      <button class="btn" wx:if="{{exactAddress}}" @tap="fnNext">下一步</button>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import {ADDRESS_LIST_UPDATE} from '../utils/Constants.js'
+  import Event from '../utils/Event.js'
+
+  export default class Address extends wepy.page {
+    data = {
+      type: '1',
+      address: {},
+      exactAddress: ''
+    }
+
+    methods = {
+      chooseLocation () {
+        wepy.chooseLocation({
+          success: res => {
+            this.address = res
+            this.$apply()
+          }
+        })
+      },
+      chooseType (type) {
+        this.type = type
+        this.$apply()
+      },
+      inputExactAddress (e) {
+        this.exactAddress = e.detail.value
+        this.$apply()
+      },
+      fnNext () {
+        wepy.navigateBack()
+      }
+    }
+
+    onUnload () {
+      console.log(this.$data)
+      Event.emit(ADDRESS_LIST_UPDATE, this.$data)
+    }
+  }
+</script>
