@@ -44,8 +44,8 @@
   padding: 24rpx 20rpx;
   .order-left {
     flex: 1;
-    .type-name {font-size: 32rpx; color: #333; margin-bottom: 60rpx;}
-    .address {line-height: 26rpx; margin-bottom: 12rpx;}
+    .type-name {height: 36rpx; font-size: 32rpx; color: #333; margin-bottom: 60rpx;}
+    .address {height: 28rpx; margin-bottom: 12rpx;}
   }
   .order-right {
     width: 220rpx;
@@ -53,7 +53,7 @@
     margin-left: 20rpx;
     direction:rtl;
     .type-icon {width: 120rpx; height: 120rpx; margin-bottom: 30rpx;}
-    .price {line-height: 26rpx;}
+    .price {height: 28rpx; }
   }
 }
 .notice {
@@ -81,7 +81,7 @@
       flex-direction: column;
       justify-content: space-between;
       padding-right: 24rpx;
-      .seller {line-height: 32rpx; font-size: 32rpx; color: #333;}
+      .seller {height: 36rpx; font-size: 32rpx; color: #333;}
       .info {
         display: flex;
         align-items: center;
@@ -116,9 +116,12 @@
 </style>
 <template>
   <view class="container">
+    <!-- 首页地图背景 -->
     <!-- <map id="map" longitude="{{ longitude }}" latitude="{{ latitude }}" scale="14" controls="{{controls}}" bindcontroltap="controltap" markers="{{markers}}" bindmarkertap="markertap" polyline="{{polyline}}" bindregionchange="regionchange" show-location style="width: 100%; height: 100%;"></map>     -->
 
+    <!-- 底部工具栏 -->
     <cover-view class="bottom-view">
+      <!-- 回收品类型选择 -->
       <cover-view class="pics-box" wx:if="{{step === 2}}">
         <cover-view class="box" wx:for="{{ type }}" wx:key @tap="chooseType({{index}})">
           <cover-image class="pic" src="../images/icons/{{item.pic}}.png"></cover-image>
@@ -126,6 +129,7 @@
           <cover-view class="text">{{item.text}}</cover-view>
         </cover-view>
       </cover-view>
+      <!-- 回收品类型信息 -->
       <cover-view class="pics-box order" wx:if="{{step === 3}}">
         <cover-view class="order-left" @tap="fnChooseAddress">
           <cover-view class="type-name">家电</cover-view>
@@ -137,10 +141,12 @@
           <cover-view class="price">价格：30~100/台</cover-view>
         </cover-view>
       </cover-view>
+      <!-- 呼叫收客状态栏 -->
       <cover-view class="pics-box notice" wx:if="{{step === 5}}">
         <cover-image class="notice-icon" src="../images/icons/address.png"></cover-image>
         <cover-view class="notice-text">收客正在努力赶来，请您耐心等待。若您另有安排，可在5分钟内无责取消</cover-view>
       </cover-view>
+      <!-- 收客信息 -->
       <cover-view class="pics-box shop" wx:if="{{step === 5}}">
         <cover-view class="flex-box">
           <cover-image class="icon" src="../images/icons/jiadian.png"></cover-image>
@@ -166,6 +172,7 @@
           </cover-view>
         </cover-view>
       </cover-view>
+      <!-- 底部按钮 -->
       <cover-view wx:if="{{step === 1}}" class="btn" @tap="fnChoose">选择</cover-view>
       <cover-view wx:if="{{step === 2 && isChooseType}}" class="btn" @tap="fnChooseAddress">下一步</cover-view>
       <cover-view wx:if="{{step === 3}}" class="btn" @tap="fnSubmit">呼叫收客</cover-view>
@@ -178,7 +185,7 @@
 <script>
   import wepy from 'wepy'
   import Toast from 'wepy-com-toast'
-  import {GOODSTYPE, ADDRESS_LIST_UPDATE} from '../utils/Constants.js'
+  import {GOODSTYPE, ADDRESS_LIST_UPDATE, LOGIN_SUCCESS_LISTENER} from '../utils/Constants.js'
   import Event from '../utils/Event.js'
 
   export default class Index extends wepy.page {
@@ -205,6 +212,7 @@
       now () {
         return +new Date()
       },
+      // 判断是否选择回收品类型
       isChooseType () {
         let res = 0
         this.chooseType.forEach(function(item) {
@@ -215,30 +223,18 @@
     }
 
     methods = {
-      toast () {
-        let promise = this.$invoke('toast', 'show', {
-          title: '自定义标题',
-          img: 'https://raw.githubusercontent.com/kiinlam/wetoast/master/images/star.png'
-        })
-
-        promise.then((d) => {
-          console.log('toast done')
-        })
-      },
+      // 选择回收品类型
       chooseType (index) {
         this.chooseType[index] = !this.chooseType[index]
         this.$apply()
       },
+      // 打开选择回收品类型弹窗
       fnChoose () {
         this.step = 2
         this.$apply()
       },
+      // 选择地址
       fnChooseAddress () {
-        // wepy.chooseAddress({
-        //   success: res => {
-        //     console.log(res)
-        //   }
-        // })
         wepy.navigateTo({url: './address'})
         Event.listen(ADDRESS_LIST_UPDATE, params => {
           this.userType = params.type
@@ -249,34 +245,57 @@
           Event.remove(ADDRESS_LIST_UPDATE)
         }, this)
       },
+      // 呼叫收客
       fnSubmit () {
-        this.step = 4
-        this.$apply()
+        wepy.navigateTo({url: './login'})
+        Event.listen(LOGIN_SUCCESS_LISTENER, params => {
+          this.step = 4
+          this.$apply()
+        })
       },
+      // 取消订单
       fnCancel () {
-        this.step = 5
-        this.$apply()
+        wepy.showModal({
+          title: '取消订单',
+          content: '接单不易，请勿轻易取消',
+          success: res => {
+            if (res.confirm) {
+              console.log('confirm')
+              this.step = 5
+              this.$apply()
+            } else if (res.cancel) {
+              console.log('cancel')
+              wepy.navigateTo({url: './evaluate'})
+            }
+          }
+        })
       },
+      // 打电话
       fnCall (tel) {
         wepy.makePhoneCall({phoneNumber: tel})
       }
     }
 
     events = {
-      'index-emit': (...args) => {
-        let $event = args[args.length - 1]
-        console.log(`${this.$name} receive ${$event.name} from ${$event.source.$name}`)
-      }
+
     }
 
     onLoad() {
       let self = this
-      let getLocationSuc = {
+      // 定位回调
+      let getLocationCb = {
         success: res => {
           self.latitude = res.latitude
           self.longitude = res.longitude
+        },
+        fail: res => {
+          wepy.showToast({
+            title: '未获取定位授权，功能无法使用！',
+            icon: 'none'
+          })
         }
       }
+      // 获取系统信息
       let getSystemInfoSuc = {
         success: res => {
           const controls = [{
@@ -293,7 +312,8 @@
           self.controls = controls
         }
       }
-      Promise.all([wepy.getLocation(getLocationSuc), wepy.getSystemInfo(getSystemInfoSuc)]).then(() => self.$apply())
+      Promise.all([wepy.getLocation(getLocationCb), wepy.getSystemInfo(getSystemInfoSuc)])
+        .then(() => self.$apply())
     }
   }
 </script>

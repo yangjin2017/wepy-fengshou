@@ -21,7 +21,7 @@
         </view>
         <view class="content">
           <view class="star" bindtap="myStarChoose">
-            <block wx:for="{{starMap}}">
+            <block wx:for="{{starMap}}" wx:key="">
               <text wx:if="{{star>=index+1}}" style="padding-right: .5em; color: #ffcc00;" data-star="{{index+1}}">★</text>
               <text wx:if="{{star<index+1}}" style="padding-right: .5em" data-star="{{index+1}}">★</text>
             </block>
@@ -63,9 +63,7 @@
       }
     }
 
-    onLoad() {
-      console.log(111)
-    }
+    onLoad() {}
   }
 </script>
 

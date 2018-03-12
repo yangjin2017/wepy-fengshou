@@ -1,5 +1,6 @@
 <style lang="less">
   .bg {
+    width: 100%;
     height: 100%;
   }
   .panel {
@@ -58,6 +59,7 @@
 
 <template>
   <view class="container">
+    <!-- 页面背景 -->
     <image class="bg" src="../images/bg.png"></image>
     <view class="panel">
       <view class="title">
@@ -70,7 +72,7 @@
       </view>
       <view class="row">
         <image class="icon" src="../images/icons/address.png"></image>
-        <input type="text" disabled="{{!address.address}}" bindinput="inputExactAddress" placeholder="您的具体位置或门牌号">
+        <input type="text" disabled="{{!address.address}}" bindinput="inputExactAddress" placeholder="您的具体位置或门牌号" adjust-position="true">
       </view>
       <button class="btn" wx:if="{{exactAddress}}" @tap="fnNext">下一步</button>
     </view>
@@ -90,6 +92,7 @@
     }
 
     methods = {
+      // 选择定位地址
       chooseLocation () {
         wepy.chooseLocation({
           success: res => {
@@ -98,21 +101,24 @@
           }
         })
       },
+      // 选择用户类型
       chooseType (type) {
         this.type = type
         this.$apply()
       },
+      // 输入详细地址
       inputExactAddress (e) {
         this.exactAddress = e.detail.value
         this.$apply()
       },
+      // 确定提交
       fnNext () {
         wepy.navigateBack()
       }
     }
 
+    // 卸载当前页面
     onUnload () {
-      console.log(this.$data)
       Event.emit(ADDRESS_LIST_UPDATE, this.$data)
     }
   }

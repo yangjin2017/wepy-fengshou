@@ -36,4 +36,7 @@ export const GOODSTYPE = [{
     val: '8'
   }]
 
+// 地址选择完毕
 export const ADDRESS_LIST_UPDATE = 'ADDRESS_LIST_UPDATE'
+// 登陆成功
+export const LOGIN_SUCCESS_LISTENER = 'login_success_listener'

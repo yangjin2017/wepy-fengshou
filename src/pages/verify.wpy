@@ -8,10 +8,10 @@
         {{btnDisabledTime > 0?btnDisabledTime + 's后重发':'重新发送'}}
       </button>
       <label class="vcode_box">
-        <input type="number" class="vcode" disabled="{{vcode[0]}}" maxlength="1" bindinput="vcodeInput" data-index="0" focus="{{!vcode[0]}}">
-        <input type="number" class="vcode" disabled="{{!(vcode[0] && !vcode[1])}}" maxlength="1" bindinput="vcodeInput" data-index="1" focus="{{vcode[0] && !vcode[1]}}">
-        <input type="number" class="vcode" disabled="{{!(vcode[1] && !vcode[2])}}" maxlength="1" bindinput="vcodeInput" data-index="2" focus="{{vcode[1] && !vcode[2]}}">
-        <input type="number" class="vcode" disabled="{{!(vcode[2] && !vcode[3])}}" maxlength="1" bindinput="vcodeInput" data-index="3" focus="{{vcode[2] && !vcode[3]}}">
+        <input type="number" class="vcode" disabled="{{vcode[0]}}" maxlength="1" bindinput="vcodeInput" data-index="0" focus="{{!vcode[0]}}" />
+        <input type="number" class="vcode" disabled="{{!(vcode[0] && !vcode[1])}}" maxlength="1" bindinput="vcodeInput" data-index="1" focus="{{vcode[0] && !vcode[1]}}" />
+        <input type="number" class="vcode" disabled="{{!(vcode[1] && !vcode[2])}}" maxlength="1" bindinput="vcodeInput" data-index="2" focus="{{vcode[1] && !vcode[2]}}" />
+        <input type="number" class="vcode" disabled="{{!(vcode[2] && !vcode[3])}}" maxlength="1" bindinput="vcodeInput" data-index="3" focus="{{vcode[2] && !vcode[3]}}" />
       </label>
     </view>
   </view>
@@ -19,10 +19,12 @@
 
 <script>
   import wepy from 'wepy'
+  // import {LOGIN_SUCCESS_LISTENER} from '../utils/Constants.js'
+  // import Event from '../utils/Event.js'
 
   export default class Verify extends wepy.page {
     data = {
-      tel: '1111111111',
+      tel: '',
       vcode: [],
       btnDisabledTime: 0
     }
@@ -43,16 +45,21 @@
         this.vcode[index] = e.detail.value
         this.$apply()
         if (index === '3') {
-
-        } 
+          console.log(this.vcode.join(''))
+          wepy.navigateBack({delta: 2})
+        }
       }
     }
 
     onLoad (opt) {
-      console.log(opt)
+      this.tel = opt.tel
       this.btnDisabledTime = 60
       this.$apply()
     }
+
+    // onUnload() {
+    //   Event.emit(LOGIN_SUCCESS_LISTENER, this.$data)
+    // }
   }
 </script>
 
@@ -68,10 +75,10 @@
     left: 50%;
     width: 460rpx;
     margin-left: -230rpx;
-    margin-top: -121rpx;
-    .title {display: block; font-size: 48rpx; color: #333; padding: 60rpx 0 38rpx; width: 100%; text-align: center;}
-    .tips {display: block; width: 100%; font-size: 36rpx; color: #ccc; text-align: center;}
-    .btn {display: block; margin: 34rpx auto 27rpx; width: 244rpx; height: 82rpx; line-height: 82rpx; padding: 0; font-size: 36rpx;}
+    margin-top: -161rpx;
+    .title {display: block; font-size: 32rpx; color: #333; padding: 60rpx 0 38rpx; width: 100%; text-align: center;}
+    .tips {display: block; width: 100%; font-size: 28rpx; color: #ccc; text-align: center;}
+    .btn {display: block; margin: 30rpx auto 24rpx; width: 200rpx; height: 60rpx; line-height: 60rpx; padding: 0; font-size: 28rpx;}
     .vcode_box {
       display: flex;
       justify-content: space-between;
